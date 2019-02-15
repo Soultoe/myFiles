@@ -1,0 +1,72 @@
+####################################################################
+[ ca ]
+default_ca      = CA_default            # The default ca section
+
+####################################################################
+[ CA_default ]
+dir             = .                  		# Where everything is kept
+certs           = $dir/certs           		# Where the issued certs are kept
+database        = $dir/index.txt        	# database index file.
+certificate     = $dir/certs/cacert.crt      	# The CA certificate
+new_certs_dir   = $dir/newcerts         	# default place for new certs.
+serial          = $dir/serial           	# The current serial number
+private_key     = $dir/private/ca.key        	# The private key
+default_days    = 365
+default_md      = sha256
+preserve        = no
+policy          = policy_match
+
+# For the CA policy
+[ policy_match ]
+countryName		= match
+localityName		= match
+organizationName	= match
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = match
+
+####################################################################
+[ req ]
+distinguished_name      = req_distinguished_name
+
+
+[ req_distinguished_name ]
+countryName                     = Country Name (2 letter code)
+countryName_default             = AU
+countryName_min                 = 2
+countryName_max                 = 2
+localityName                    = Locality Name (eg, city)
+organizationName                = Organization Name (eg, company)
+organizationName_default        = Internet Widgits Pty Ltd
+organizationalUnitName          = Organizational Unit Name (eg, section)
+commonName                      = Common Name (e.g. server FQDN or YOUR name)
+commonName_max                  = 64
+emailAddress                    = Email Address
+emailAddress_max                = 64
+
+[CA_ROOT]
+nsComment                       = "CA ROOT"
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+basicConstraints                = critical,CA:TRUE,pathlen:1
+keyUsage                        = keyCertSign, cRLSign
+
+[CA_LAB]
+nsComment                       = "CA LAB"
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+basicConstraints                = critical,CA:TRUE,pathlen:0
+issuerAltName                   = issuer:copy
+keyUsage                        = keyCertSign, cRLSign
+nsCertType                      = sslCA
+
+[SERVER]
+nsComment                       = "Server Certificate"
+subjectKeyIdentifier            = hash
+authorityKeyIdentifier          = keyid,issuer:always
+issuerAltName                   = issuer:copy
+subjectAltName                  = DNS:www.monserver.com,IP:192.168.1.17
+basicConstraints                = critical,CA:FALSE
+keyUsage                        = digitalSignature, nonRepudiation, keyEncipherment
+nsCertType                      = server
+extendedKeyUsage                = serverAuth
